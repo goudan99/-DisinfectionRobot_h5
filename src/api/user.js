@@ -11,7 +11,7 @@ export const login = ({ username, password }) => {
     password
   }
   return request({
-    url: 'login/token',
+    url: 'auth/login/token',
     data,
     method: 'post'
   })
@@ -19,7 +19,33 @@ export const login = ({ username, password }) => {
 
 export const logout = (token) => {
   return request({
-    url: 'login/logout',
+    url: 'auth/login/logout',
+    token,
+    method: 'post'
+  })
+}
+
+export const getCode = (data) => {
+  return request({
+    url: 'auth/find/code',
+    data,
+    method: 'post'
+  })
+}
+
+export const getUserPhoneCode = (type) => {
+  const data = { type }
+  return request({
+    url: 'profile/user/code',
+    data,
+    method: 'post'
+  })
+}
+
+export const findPassword = (data) => {
+  return request({
+    url: 'auth/find/password',
+    data,
     method: 'post'
   })
 }
@@ -42,6 +68,14 @@ export const storeProfileUser = (data) => {
 export const storePassword = (data) => {
   return request({
     url: 'profile/password',
+    data,
+    method: 'post'
+  })
+}
+
+export const storePhone = (data) => {
+  return request({
+    url: 'profile/phone',
     data,
     method: 'post'
   })
@@ -95,7 +129,7 @@ export const restTrash = id => {
 /* 获取没有读消息条数 */
 export const getUnreadCount = () => {
   return request({
-    url: 'analysis/notice/unread',
+    url: 'profile/notice/unread',
     method: 'get'
   })
 }

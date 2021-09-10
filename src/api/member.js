@@ -1,9 +1,16 @@
 import request from '@/libs/request'
 
-export const getUsers = ({ page, limit }) => {
-  const data = { page: page, limit: limit }
+export const getUsers = (data) => {
   return request({
     url: 'member/user',
+    params: data,
+    method: 'get'
+  })
+}
+
+export const getUsersInfo = (id) => {
+  return request({
+    url: 'member/role/' + id,
     data,
     method: 'get'
   })
@@ -25,11 +32,10 @@ export const removeUser = (data) => {
   })
 }
 
-export const getRoles = ({ page, limit }) => {
-  const data = { page: page, limit: limit }
+export const getRoles = (data) => {
   return request({
     url: 'member/role',
-    data,
+    params: data,
     method: 'get'
   })
 }
@@ -42,21 +48,11 @@ export const storeRole = (data) => {
   })
 }
 
-export const removeRole = ({ id }) => {
-  const data = { id: id }
+export const removeRole = (data) => {
   return request({
     url: 'member/role',
     data,
     method: 'delete'
-  })
-}
-
-export const roleGrantApi = ({ roleId, apiIds }) => {
-  const data = { roleId: roleId, apiIds: apiIds }
-  return request({
-    url: 'base/role/grant/api',
-    data,
-    method: 'post'
   })
 }
 

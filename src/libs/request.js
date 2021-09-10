@@ -18,7 +18,7 @@ const addErrorLog = error => {
     url: responseURL
   }
   console.log(responseURL)
-  if (!responseURL.includes('logger/error')) store.dispatch('addErrorLog', info)
+  if (!responseURL.includes('logger/api')) store.dispatch('addErrorLog', info)
 }
 
 const service = axios.create({

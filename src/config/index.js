@@ -2,7 +2,7 @@ export default {
   /**
    * @description 配置显示在浏览器标签的title
    */
-  title: 'heekit商城系统',
+  title: '扫地机器人',
   /**
    * @description token在Cookie中存储的天数，默认1天
    */

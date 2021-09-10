@@ -1,5 +1,6 @@
 <template>
   <div class="header-bar">
+    <div style="display: inline-block;vertical-align: top;"><slot name="logo"></slot></div>
     <sider-trigger :collapsed="collapsed" icon="md-menu" @on-change="handleCollpasedChange"></sider-trigger>
     <custom-bread-crumb show-icon style="margin-left: 30px;" :list="breadCrumbList"></custom-bread-crumb>
     <div class="custom-content-con">

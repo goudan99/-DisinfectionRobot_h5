@@ -17,6 +17,7 @@ export default {
     id: '',
     nickname: '',
     avatar: '',
+    phone: '',
     token: getToken(),
     access: '',
     hasGetInfo: false,
@@ -30,6 +31,9 @@ export default {
   mutations: {
     setAvatar (state, avatarPath) {
       state.avatar = avatarPath
+    },
+    setPhone (state, phone) {
+      state.phone = phone
     },
     setUserId (state, id) {
       state.id = id
@@ -126,6 +130,7 @@ export default {
               commit('setAvatar', data.avatar)
               commit('setUserName', data.nickname)
               commit('setUserId', data.id)
+              commit('setPhone', data.phone)
               commit('setAccess', '')
               commit('setHasGetInfo', true)
               data.menus = getProfileMenus().then(res => {

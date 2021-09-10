@@ -2,13 +2,23 @@
   <div>
     <Card shadow>
       <div class="search-con search-con-top">
+        <Input placeholder="请输入用户名,或手机号..." style="width: 300px" v-model="key"></Input>
+        <Select v-model="status" style="width:200px;margin-left:8px">
+          <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+        </Select>
+        <Button icon="ios-search" type="primary" @click="handleSearch" style="margin-left:8px">搜索</Button>
+      </div>
+      <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建用户
           </Button>
+          <Button class="search-btn" type="error" @click="handleRemove(select)" :disabled="disabled">
+            <Icon type="search"/>&nbsp;&nbsp;删除用户
+          </Button>
         </ButtonGroup>
       </div>
-      <Table :columns="columns" :data="data" :loading="loading">
+      <Table :columns="columns" :data="data" :loading="loading" @on-selection-change="handleSelect">
         <template slot="passed" slot-scope="{ row }">
           <Badge v-if="row.passed===1" status="success" text="正常"/>
           <Badge v-else-if="row.passed===2" status="success" text="锁定"/>
@@ -16,19 +26,15 @@
         </template>
         <template  slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">编辑</a>&nbsp;
-          <a @click="handleRemove(row)" v-if="row.is_system===0">删除</a>&nbsp;
+          <a @click="handleRemove([row.id])" v-if="row.is_system===0">删除</a>&nbsp;
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="680"
-           @on-ok="handleSubmit"
-           @on-cancel="handleReset">
-      <Form ref="userForm" :model="formItem" :rules="formItemRules" :label-width="100">
+    <Modal v-model="modalVisible1" :title="modalTitle" width="680" @on-ok="handleSubmit" @on-cancel="handleReset">
+      <Form ref="userForm1" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="昵称" prop="nickname">
           <Input v-model="formItem.nickname" placeholder="请输入内容"></Input>
         </FormItem>
@@ -41,14 +47,16 @@
         <FormItem label="再次确认密码" prop="passwordConfirm">
           <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="角色：" prop="role">
-          <Select v-model="formItem.role_id" style="width:200px" v-if="formItem.is_system !== 1">
-            <Option v-for="item in roleList" :value="item.id" :key="item.id">{{ item.name }}</Option>
-          </Select>
-          <span v-else>内置管理员</span>
+        <FormItem label="激活码" prop="code">
+          <Input v-model="formItem.code" :disabled="formItem.id?true:false" placeholder="激活码,不能修改"></Input>
         </FormItem>
-        <FormItem label="邮箱" prop="email">
-          <Input v-model="formItem.email" placeholder="请输入内容"></Input>
+        <FormItem label="角色：" prop="role">
+          <CheckboxGroup v-model="formItem.roles" v-if="formItem.is_system !== 1">
+            <Checkbox v-for="(item,index) in roleList" :key="index" :label="item.id">
+             <span>{{item.name}}</span>
+            </Checkbox>
+          </CheckboxGroup>
+          <span v-else>内置管理员</span>
         </FormItem>
         <FormItem label="手机号" prop="phone">
           <Input v-model="formItem.phone" placeholder="请输入内容"></Input>
@@ -63,7 +71,49 @@
           <Input v-model="formItem.desc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
-
+      <div slot="footer">
+        <Button type="default" @click="handleReset">取消</Button>&nbsp;
+        <Button type="primary" @click="handleSubmit">提交</Button>
+      </div>
+    </Modal>
+    <Modal v-model="modalVisible" :title="modalTitle" width="680" @on-ok="handleSubmit" @on-cancel="handleReset">
+      <Form ref="userForm" :model="formItem" :rules="formItemRules1" :label-width="100">
+        <FormItem label="昵称" prop="nickname">
+          <Input v-model="formItem.nickname" placeholder="登录昵称"></Input>
+        </FormItem>
+        <FormItem label="登录名" prop="name">
+          <Input :disabled="formItem.id?true:false" v-model="formItem.name" placeholder="登录帐号"></Input>
+        </FormItem>
+        <FormItem label="登录密码" prop="password">
+          <Input type="password" v-model="formItem.password"  placeholder="如果不修改，保持为空"></Input>
+        </FormItem>
+        <FormItem label="再次确认密码" prop="passwordConfirm">
+          <Input type="password" v-model="formItem.passwordConfirm" placeholder="如果不修改，保持为空"></Input>
+        </FormItem>
+        <FormItem label="激活码" prop="code">
+          <Input v-model="formItem.code" :disabled="formItem.id?true:false" placeholder="请输入激活码"></Input>
+        </FormItem>
+        <FormItem label="角色：" prop="role">
+          <CheckboxGroup v-model="formItem.roles" v-if="formItem.is_system !== 1">
+            <Checkbox v-for="(item,index) in roleList" :key="index" :label="item.id">
+             <span>{{item.name}}</span>
+            </Checkbox>
+          </CheckboxGroup>
+          <span v-else>内置管理员</span>
+        </FormItem>
+        <FormItem label="手机号" prop="phone">
+          <Input v-model="formItem.phone" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="状态">
+          <RadioGroup v-model="formItem.passed">
+            <Radio label="0">禁用</Radio>
+            <Radio label="1">正常</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="描述">
+          <Input v-model="formItem.desc" type="textarea" placeholder="请输入内容"></Input>
+        </FormItem>
+      </Form>
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
         <Button type="primary" @click="handleSubmit">提交</Button>
@@ -74,6 +124,7 @@
 
 <script>
 import { getUsers, storeUser, removeUser, getRoles } from '@/api/member'
+import dayjs from 'dayjs'
 export default {
   name: 'SystemUser',
   data () {
@@ -95,8 +146,14 @@ export default {
       }
     }
     return {
+      statusList: [{ value: -1, label: '全部' }, { value: 1, label: '可用' }, { value: 0, label: '不可用' }],
+      key: '',
+      status: -1,
+      disabled: true,
       loading: false,
       modalVisible: false,
+      modalVisible1: false,
+      select: [],
       modalTitle: '',
       pageInfo: {
         total: 0,
@@ -111,27 +168,38 @@ export default {
           { required: true, message: '登录密码不能为空', trigger: 'blur' }
         ],
         passwordConfirm: [
-          { validator: validatePassConfirm, trigger: 'blur' }
+          { required: true, validator: validatePassConfirm, trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '激活码不能为空', trigger: 'blur' }
         ],
         nickname: [
           { required: true, message: '昵称不能为空', trigger: 'blur' }
         ],
-        email: [
-          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+        phone: [
+          { required: true, validator: validateMobile, trigger: 'blur' }
+        ]
+      },
+      formItemRules1: {
+        name: [
+          { required: true, message: '登录名不能为空', trigger: 'blur' }
+        ],
+        nickname: [
+          { required: true, message: '昵称不能为空', trigger: 'blur' }
         ],
         phone: [
-          { validator: validateMobile, trigger: 'blur' }
+          { required: true, validator: validateMobile, trigger: 'blur' }
         ]
       },
       formItem: {
         id: '',
         name: '',
-        role_id: 0,
+        roles: [],
         nickname: '',
         password: '',
         passwordConfirm: '',
         passed: 1,
-        email: '',
+        code: '',
         phone: '',
         desc: '',
         avatar: ''
@@ -147,16 +215,17 @@ export default {
           key: 'name'
         },
         {
-          title: '邮箱',
-          key: 'email'
-        },
-        {
           title: '手机号',
           key: 'phone'
         },
         {
           title: '角色名',
-          key: 'role_name'
+          key: 'roles',
+          render: (h, { row }) => {
+            return (
+              <span>{ row.is_system ? '内置管理员' : row.roles.map(item => { return item.name }).join(',') }</span>
+            )
+          }
         },
         {
           title: '昵称',
@@ -172,8 +241,13 @@ export default {
           key: 'desc'
         },
         {
-          title: '注册时间',
-          key: 'created_at'
+          title: '上次登录',
+          key: 'last_at',
+          render: (h, { row }) => {
+            return (
+              <span>{ dayjs(row.last_at).format('YYYY-MM-DD HH:mm:ss') }</span>
+            )
+          }
         },
         {
           title: '操作',
@@ -191,10 +265,11 @@ export default {
       const newData = {
         id: '',
         name: '',
-        role_id: 0,
+        roles: [],
         nickname: '',
         passed: 1,
         email: '',
+        code: '',
         password: '',
         passwordConfirm: '',
         phone: '',
@@ -205,34 +280,40 @@ export default {
       // 重置验证
       this.$refs['userForm'].resetFields()
       this.modalVisible = false
+      this.modalVisible1 = false
     },
     handleModal (data) {
       if (data) {
         this.modalTitle = '编辑用户'
-        this.formItem = Object.assign({}, this.formItem, data)
+        let roles = Object.assign({}, data)
+        roles['roles'] = []
+        data['roles'].map(item => { roles['roles'].push(item.id) })
+        this.formItem = Object.assign({}, this.formItem, roles)
       } else {
         this.modalTitle = '添加用户'
       }
       this.formItem.passed = this.formItem.passed + ''
-      this.modalVisible = true
+      if (!this.formItem.id > 0) {
+        this.modalVisible1 = true
+        this.modalVisible = false
+      } else {
+        this.modalVisible1 = false
+        this.modalVisible = true
+      }
     },
     handleRemove (data) {
-      if (data.is_system === 1) {
-        this.$Message.error('系统用户，你无权限删除')
-      } else {
-        this.$Modal.confirm({
-          title: '删除后将无法恢复,确定删除吗？',
-          onOk: () => {
-            removeUser({ id: data.id }).then(res => {
-              this.handleSearch()
-              if (res.code === 0) {
-                this.pageInfo.page = 1
-                res.data ? this.$Message.success('删除成功') : this.$Message.error('删除失败,权限不足')
-              }
-            })
-          }
-        })
-      }
+      this.$Modal.confirm({
+        title: '删除后将无法恢复,确定删除吗？',
+        onOk: () => {
+          removeUser(data).then(res => {
+            this.handleSearch()
+            if (res.code === 0) {
+              this.pageInfo.page = 1
+              res.data ? this.$Message.success('删除成功') : this.$Message.error('删除失败,权限不足')
+            }
+          })
+        }
+      })
     },
     handleSubmit () {
       this.$refs['userForm'].validate((valid) => {
@@ -251,17 +332,14 @@ export default {
     },
     handleSearch () {
       this.loading = true
-      getUsers({ page: this.pageInfo.page, limit: this.pageInfo.limit }).then(res => {
+      getUsers({ page: this.pageInfo.page, limit: this.pageInfo.limit, key: this.key, status: this.status }).then(res => {
         this.data = res.data.data
         this.pageInfo.total = parseInt(res.data.total)
+        this.disabled = true
         this.loading = false
       })
-      getRoles({ page: this.pageInfo.page, limit: this.pageInfo.limit }).then(res => {
-        const root = {
-          id: 0,
-          name: '选择角色'
-        }
-        this.roleList = [root].concat(res.data.data)
+      getRoles().then(res => {
+        this.roleList = res.data.data
         this.loading = false
       })
     },
@@ -272,6 +350,11 @@ export default {
     handlePageSize (size) {
       this.pageInfo.limit = size
       this.handleSearch()
+    },
+    handleSelect (selection) {
+      selection.length > 0 ? this.disabled = false : this.disabled = true
+      this.select = []
+      selection.map(item => { this.select.push(item.id) })
     }
   },
   mounted: function () {

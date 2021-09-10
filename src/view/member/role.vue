@@ -2,20 +2,27 @@
   <div>
     <Card shadow>
       <div class="search-con search-con-top">
+        <Input placeholder="请输角色名..." style="width: 300px" v-model="key"></Input>
+        <Button icon="ios-search" type="primary" @click="handleSearch" style="margin-left:8px">搜索</Button>
+      </div>
+      <div class="search-con search-con-top">
         <ButtonGroup>
           <Button  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建角色
           </Button>
+          <Button class="search-btn" type="error" @click="handleRemove(select)" :disabled="disabled">
+            <Icon type="search"/>&nbsp;&nbsp;删除角色
+          </Button>
         </ButtonGroup>
       </div>
-      <Table :columns="columns" :data="data" :loading="loading">
+      <Table :columns="columns" :data="data" :loading="loading" @on-selection-change="handleSelect">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="有效"/>
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)"> 编辑</a>&nbsp;
-          <a @click="handleRemove(row)" v-if="row.is_system===0">删除</a>&nbsp;
+          <a @click="handleRemove([row.id])" v-if="row.is_system===0">删除</a>&nbsp;
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
@@ -29,12 +36,6 @@
       <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="角色名" prop="name">
           <Input v-model="formItem.name" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="状态">
-          <RadioGroup v-model="formItem.statusSwatch">
-            <Radio label="0">禁用</Radio>
-            <Radio label="1">正常</Radio>
-          </RadioGroup>
         </FormItem>
         <FormItem label="描述">
           <Input v-model="formItem.desc" type="textarea" placeholder="请输入内容"></Input>
@@ -66,14 +67,18 @@
 import { getRoles, storeRole, removeRole, getRoleInfo } from '@/api/member'
 import { getAccess } from '@/api/setting'
 import { listConvertTree } from '@/libs/util'
+import dayjs from 'dayjs'
 export default {
   name: 'SystemRole',
   data () {
     return {
       loading: false,
+      disabled: true,
       modalVisible: false,
       modalTitle: '',
+      key: '',
       selectAccess: [],
+      select: [],
       pageInfo: {
         total: 0,
         page: 1,
@@ -118,16 +123,16 @@ export default {
           key: 'desc'
         },
         {
-          title: '状态',
-          slot: 'status',
-          key: 'status'
-        },
-        {
           title: '创建时间',
-          key: 'created_at'
+          key: 'created_at',
+          render: (h, { row }) => {
+            return (
+              <span>{ dayjs(row.created_at).format('YYYY-MM-DD HH:mm:ss') }</span>
+            )
+          }
         },
         {
-          title: '角色',
+          title: '操作',
           slot: 'action',
           width: 125,
           fixed: 'right'
@@ -203,10 +208,11 @@ export default {
     },
     handleSearch () {
       this.loading = true
-      getRoles({ page: this.pageInfo.page, limit: this.pageInfo.limit }).then(res => {
+      getRoles({ page: this.pageInfo.page, limit: this.pageInfo.limit, key: this.key }).then(res => {
         this.data = res.data.data
         this.pageInfo.total = parseInt(res.data.total)
         this.loading = false
+        this.disabled = true
       })
     },
     handlePage (current) {
@@ -221,7 +227,7 @@ export default {
       this.$Modal.confirm({
         title: '确定删除吗？',
         onOk: () => {
-          removeRole({ id: data.id }).then(res => {
+          removeRole(data).then(res => {
             this.handleSearch()
             if (res.code === 0) {
               this.pageInfo.page = 1
@@ -249,6 +255,11 @@ export default {
         }
         this.selectAccess = listConvertTree(res.data, opt)
       })
+    },
+    handleSelect (selection) {
+      selection.length > 0 ? this.disabled = false : this.disabled = true
+      this.select = []
+      selection.map(item => { this.select.push(item.id) })
     }
   },
   mounted: function () {

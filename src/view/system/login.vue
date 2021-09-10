@@ -1,12 +1,16 @@
 <template>
   <div class="login">
     <div class="login-con">
-      <Card title="欢迎登录" :bordered="false">
+      <Card title="欢迎登录" :bordered="false" v-if="isShow">
         <login-form @on-success-valid="handleSubmit"></login-form>
-        <p class="login-tip"></p>
+        <a class="login-tip" @click="handleChange">忘记密码 </a>
+      </Card>
+      <Card title="找回密码" :bordered="false" v-else>
+        <password-form @on-success-valid="handleFind" @on-send="handleSend"></password-form>
+        <a @click="handleChange" class="login-tip">登录</a>
       </Card>
       <p class="copyright">
-        Copyright © 2021 - heekit.com
+        Copyright © 2021 - <a href="https://www.kf-robotics.com/">www.kf-robotics.com</a>
       </p>
     </div>
   </div>
@@ -14,10 +18,18 @@
 
 <script>
 import LoginForm from '_c/login-form'
+import PasswordForm from '_c/password-form'
 import { mapActions } from 'vuex'
+import { getCode, findPassword } from '@/api/user'
 export default {
   components: {
-    LoginForm
+    LoginForm,
+    PasswordForm
+  },
+  data () {
+    return {
+      isShow: true
+    }
   },
   methods: {
     ...mapActions([
@@ -31,6 +43,36 @@ export default {
           location.reload()
         })
       })
+    },
+    handleFind (data) {
+      findPassword(data).then(resut => {
+        if (resut.code === 0) {
+          this.$Modal.confirm({
+            title: '密码修改',
+            content: resut.msg,
+            okText: '点击登录',
+            onOk: () => {
+              this.isShow = !this.isShow
+            }
+          })
+        } else {
+          this.$Message.error(resut.msg)
+        }
+      })
+    },
+    handleSend (phone, cab) {
+      getCode({ phone, type: 1 }).then(resut => {
+        if (resut.code === 0) {
+          cab(true)
+          this.$Modal.info({ content: resut.msg })
+        } else {
+          cab(false)
+          this.$Message.error(resut.msg)
+        }
+      })
+    },
+    handleChange () {
+      this.isShow = !this.isShow
     }
   }
 }
@@ -84,6 +126,8 @@ export default {
         font-size: 10px;
         text-align: center;
         color: #c3c3c3;
+        text-align:right;
+        display:block
       }
     }
     .copyright {
