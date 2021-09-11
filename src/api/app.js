@@ -16,6 +16,21 @@ export const getApiLogs = (page) => {
   })
 }
 
+export const getJobLogs = (page) => {
+  return request({
+    url: 'system/logger/job',
+    params: page,
+    method: 'get'
+  })
+}
+export const getUserLogs = (page) => {
+  return request({
+    url: 'system/logger/user',
+    params: page,
+    method: 'get'
+  })
+}
+
 export const getCodeLogs = (page) => {
   return request({
     url: 'system/logger/code',

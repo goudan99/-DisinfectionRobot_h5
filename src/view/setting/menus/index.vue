@@ -1,6 +1,10 @@
 <template>
   <div>
     <Card shadow>
+      <p slot="title">
+        <Icon type="ios-film-outline"></Icon>
+        菜单管理
+      </p>
       <Row :gutter="16">
         <Col span="6" >
             <tree-table height="900"

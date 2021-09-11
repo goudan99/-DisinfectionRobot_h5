@@ -3,19 +3,19 @@
     <Card shadow>
       <p slot="title">
         <Icon type="ios-film-outline"></Icon>
-        角色管理
+        设备管理
       </p>
       <div class="search-con search-con-top">
-        <Input placeholder="请输角色名..." style="width: 300px" v-model="key"></Input>
+        <Input placeholder="请输sn码..." style="width: 300px" v-model="key"></Input>
         <Button icon="ios-search" type="primary" @click="handleSearch" style="margin-left:8px">搜索</Button>
       </div>
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button  class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新建角色
+            <Icon type="search"/>&nbsp;&nbsp;新建设备
           </Button>
           <Button class="search-btn" type="error" @click="handleRemove(select)" :disabled="disabled">
-            <Icon type="search"/>&nbsp;&nbsp;删除角色
+            <Icon type="search"/>&nbsp;&nbsp;删除设备
           </Button>
         </ButtonGroup>
       </div>
@@ -26,37 +26,15 @@
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)"> 编辑</a>&nbsp;
-          <a @click="handleRemove([row.id])" v-if="row.is_system===0">删除</a>&nbsp;
+          <a @click="handleRemove([row.id])">删除</a>&nbsp;
         </template>
       </Table>
-      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
-            @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="680"
-           @on-ok="handleSubmit"
-           @on-cancel="handleReset">
+    <Modal v-model="modalVisible" :title="modalTitle" width="680" @on-ok="handleSubmit" @on-cancel="handleReset">
       <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="角色名" prop="name">
-          <Input v-model="formItem.name" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.desc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="权限" prop="grantMenus">
-          <Table :columns="columns2" :data="selectAccess">
-            <template slot="status" slot-scope="{ row }">
-              <CheckboxGroup v-model="formItem.access">
-                  <Checkbox  :label="row.id">
-                    <span>{{row.name}}</span>
-                  </Checkbox>
-                  <Checkbox v-for="(item,index) in row.children" :key="index" :label="item.id">
-                    <span>{{item.name}}</span>
-                  </Checkbox>
-              </CheckboxGroup>
-            </template>
-          </Table>
+        <FormItem label="序列号" prop="sn">
+          <Input v-model="formItem.sn" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -68,12 +46,10 @@
 </template>
 
 <script>
-import { getRoles, storeRole, removeRole, getRoleInfo } from '@/api/member'
-import { getAccess } from '@/api/setting'
-import { listConvertTree } from '@/libs/util'
+import { getMachines, storeMachine, removeMachine } from '@/api/machine'
 import dayjs from 'dayjs'
 export default {
-  name: 'SystemRole',
+  name: 'machineMoudle',
   data () {
     return {
       loading: false,
@@ -89,24 +65,13 @@ export default {
         limit: 10
       },
       formItemRules: {
-        name: [
-          { required: true, message: '角色名称不能为空', trigger: 'blur' }
-        ],
-        access: [
-          { required: false, type: 'array', message: '权限不能为空', trigger: 'blur' }
+        sn: [
+          { required: true, message: '设备序列号不能为空', trigger: 'blur' }
         ]
       },
       formItem: {
-        roleId: '',
-        roleCode: '',
-        name: '',
-        path: '',
-        status: 1,
-        statusSwatch: '1',
-        menuId: '',
-        priority: 0,
-        roleDesc: '',
-        access: []
+        id: '',
+        sn: ''
       },
       columns: [
         {
@@ -115,16 +80,12 @@ export default {
           align: 'center'
         },
         {
-          title: '角色id',
+          title: 'id',
           key: 'id'
         },
         {
-          title: '角色名称',
-          key: 'name'
-        },
-        {
-          title: '描述',
-          key: 'desc'
+          title: '序列号',
+          key: 'sn'
         },
         {
           title: '创建时间',
@@ -142,18 +103,6 @@ export default {
           fixed: 'right'
         }
       ],
-      columns2: [
-        {
-          title: '权限名',
-          key: 'name',
-          minWidth: '100px'
-        },
-        {
-          title: '权限说明',
-          slot: 'status',
-          minWidth: '580px'
-        }
-      ],
       data: []
     }
   },
@@ -166,28 +115,15 @@ export default {
     },
     handleModal (data) {
       if (data) {
-        this.modalTitle = '编辑角色'
+        this.modalTitle = '编辑设备'
         this.formItem = Object.assign({}, this.formItem, data)
-        this.formItem.statusSwatch = this.formItem.status === 1 ? '1' : '0'
-        this.handleLoadRoleGranted(this.formItem.id)
       } else {
-        this.modalTitle = '添加角色'
+        this.modalTitle = '添加设备'
       }
       this.modalVisible = true
     },
     handleReset () {
-      const newData = {
-        roleId: '',
-        roleCode: '',
-        name: '',
-        path: '',
-        status: 1,
-        statusSwatch: '1',
-        menuId: '',
-        priority: 0,
-        roleDesc: '',
-        access: []
-      }
+      const newData = { id: '', sn: '' }
       this.formItem = newData
       // 重置验证
       this.$refs['form1'].resetFields()
@@ -198,7 +134,7 @@ export default {
       this.$refs['form1'].validate((valid) => {
         if (valid) {
           this.formItem.status = this.formItem.statusSwatch === '1' ? 1 : 0
-          storeRole(this.formItem).then(res => {
+          storeMachine(this.formItem).then(res => {
             if (res.code === 0) {
               this.$Message.success('保存成功')
               this.handleReset()
@@ -212,7 +148,7 @@ export default {
     },
     handleSearch () {
       this.loading = true
-      getRoles({ page: this.pageInfo.page, limit: this.pageInfo.limit, key: this.key }).then(res => {
+      getMachines({ page: this.pageInfo.page, limit: this.pageInfo.limit, key: this.key }).then(res => {
         this.data = res.data.data
         this.pageInfo.total = parseInt(res.data.total)
         this.loading = false
@@ -231,7 +167,7 @@ export default {
       this.$Modal.confirm({
         title: '确定删除吗？',
         onOk: () => {
-          removeRole(data).then(res => {
+          removeMachine(data).then(res => {
             this.handleSearch()
             if (res.code === 0) {
               this.pageInfo.page = 1
@@ -239,25 +175,6 @@ export default {
             }
           })
         }
-      })
-    },
-    handleLoadRoleGranted (roleId) {
-      getRoleInfo(roleId).then(res => {
-        if (res.code === 0) {
-          let result = []
-          res.data.access.map(item => { result.push(item.id) })
-          this.formItem.access = result
-        }
-      })
-    },
-    handleLoadAccess () {
-      getAccess().then(res => {
-        let opt = {
-          primaryKey: 'id',
-          parentKey: 'parent_id',
-          startPid: 0
-        }
-        this.selectAccess = listConvertTree(res.data, opt)
       })
     },
     handleSelect (selection) {
@@ -268,7 +185,6 @@ export default {
   },
   mounted: function () {
     this.handleSearch()
-    this.handleLoadAccess()
   }
 }
 </script>

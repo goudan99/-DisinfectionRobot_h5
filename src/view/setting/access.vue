@@ -1,6 +1,10 @@
 <template>
   <div>
     <Card shadow>
+      <p slot="title">
+        <Icon type="ios-film-outline"></Icon>
+        权限查看
+      </p>
     <tree-table height="900" expand-key="name"
       :expand-type="false"
       :is-fold="false"

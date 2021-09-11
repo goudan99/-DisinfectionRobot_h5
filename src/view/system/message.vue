@@ -1,5 +1,9 @@
 <template>
   <Card shadow>
+      <p slot="title">
+        <Icon type="ios-film-outline"></Icon>
+        个人消息通知
+      </p>
     <div>
       <div class="message-page-con message-category-con">
         <Menu width="auto" active-name="unread" @on-select="handleSelect">

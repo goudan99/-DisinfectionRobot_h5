@@ -1,6 +1,10 @@
 <template>
   <div>
     <Card shadow>
+      <p slot="title">
+        <Icon type="ios-film-outline"></Icon>
+        用户管理
+      </p>
       <div class="search-con search-con-top">
         <Input placeholder="请输入用户名,或手机号..." style="width: 300px" v-model="key"></Input>
         <Select v-model="status" style="width:200px;margin-left:8px">
