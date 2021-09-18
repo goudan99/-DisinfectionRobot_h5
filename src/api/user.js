@@ -27,7 +27,7 @@ export const logout = (token) => {
 
 export const getCode = (data) => {
   return request({
-    url: 'auth/find/code',
+    url: 'public/mobile/code',
     data,
     method: 'post'
   })
@@ -36,7 +36,7 @@ export const getCode = (data) => {
 export const getUserPhoneCode = (type) => {
   const data = { type }
   return request({
-    url: 'profile/user/code',
+    url: 'public/mobile/code',
     data,
     method: 'post'
   })

@@ -66,7 +66,6 @@ export default {
   methods: {
     init () {
       getApiLogs({}).then(res => {
-        console.log(res.data)
         this.logs = res.data
       })
     },

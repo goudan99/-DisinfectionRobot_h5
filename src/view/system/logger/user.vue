@@ -68,12 +68,7 @@ export default {
         },
         {
           key: 'content',
-          title: '操作名',
-          width: 100
-        },
-        {
-          key: 'data',
-          title: '操作数据'
+          title: '操作内容'
         },
         {
           key: 'created_at',
@@ -102,6 +97,10 @@ export default {
           this.seloading = false
           this.loading = false
         }
+      }).catch(e => {
+        this.disabled = true
+        this.seloading = false
+        this.loading = false
       })
     },
     handleExcel () {

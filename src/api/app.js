@@ -2,7 +2,7 @@ import request from '@/libs/request'
 
 export const saveErrorLogger = info => {
   return request({
-    url: 'system/logger/api',
+    url: 'public/logger/api',
     data: info,
     method: 'post'
   })

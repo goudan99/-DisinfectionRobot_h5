@@ -172,7 +172,11 @@ export default {
       this.$refs['phoneForm'].validate((valid) => {
         if (valid) {
           storePhone(this.phoneItem).then(res => {
-            this.$Message.success('保存成功')
+            if (res.code === 0) {
+              this.$Message.success('保存成功')
+            } else {
+              this.$Message.success('保存失败')
+            }
           })
         }
       })
@@ -198,10 +202,15 @@ export default {
               }, 1000)
               this.$Modal.info({ content: resut.msg })
             } else {
+              this.loading = false
               this.disable = false
               this.sendStr = '发送验证码'
               this.$Message.error(resut.msg)
             }
+          }).catch(e => {
+            this.disable = false
+            this.loading = false
+            this.sendStr = '发送验证码'
           })
         }
       })
@@ -225,10 +234,15 @@ export default {
           }, 1000)
           this.$Modal.info({ content: resut.msg })
         } else {
+          this.loading1 = false
           this.disable1 = false
           this.sendStr1 = '发送验证码'
           this.$Message.error(resut.msg)
         }
+      }).catch(e => {
+        this.disable1 = false
+        this.loading1 = false
+        this.sendStr1 = '发送验证码'
       })
     },
     handleSend1 (type) {
@@ -251,9 +265,14 @@ export default {
           this.$Modal.info({ content: resut.msg })
         } else {
           this.disable2 = false
+          this.loading2 = false
           this.sendStr2 = '发送验证码'
           this.$Message.error(resut.msg)
         }
+      }).catch(e => {
+        this.disable2 = false
+        this.loading2 = false
+        this.sendStr2 = '发送验证码'
       })
     },
     upload (file) {

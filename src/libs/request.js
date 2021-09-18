@@ -44,9 +44,12 @@ service.interceptors.request.use((config) => {
  */
 service.interceptors.response.use(
   (response) => {
-    if (response.data.code === 200 || response.data.code === 0) { // 编号为200 0才认定为成功
+    if (response.data.code === 200 || response.data.code === 0 || response.data.code === 422) { // 编号为200 0才认定为成功
       return Promise.resolve(response.data)
     } else {
+      if (response.data.code === 401) {
+        location.reload()
+      }
       Message.error({ content: response.data.msg })
       return Promise.reject(response.data)
     }
@@ -72,7 +75,7 @@ service.interceptors.response.use(
     // 错误拦截
     let message = ''
     if (error && error.response) {
-      Message.error({ content: message })
+      Message.error({ content: error.response.data.msg })
       // 请求错误处理
       return Promise.reject(error)
     } else {

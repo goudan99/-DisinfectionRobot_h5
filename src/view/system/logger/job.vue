@@ -105,6 +105,10 @@ export default {
           this.seloading = false
           this.loading = false
         }
+      }).catch(e => {
+        this.disabled = true
+        this.seloading = false
+        this.loading = false
       })
     },
     handleExcel () {

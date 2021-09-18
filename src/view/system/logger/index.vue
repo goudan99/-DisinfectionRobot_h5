@@ -118,6 +118,8 @@ export default {
         // that.pageInfo.limit = parseInt(res.data.per_page)
         that.pageInfo.page = parseInt(res.data.page)
         that.loading = false
+      }).catch(e => {
+        this.loading = false
       })
     },
     handlePage (current) {

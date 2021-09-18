@@ -12,10 +12,6 @@
       :selectable="false"
       :columns="columns"
       :data="data">
-      <template slot="status" slot-scope="{ row }">
-        <Badge v-if="row.status===1" status="success" text="有效"/>
-        <Badge v-else="" status="error" text="无效"/>
-      </template>
       <template slot="path" slot-scope="{ row }">
         <Badge v-if="row.method==='1'" type="success" text="get"/>
         <Badge v-else-if="row.method==='2'" type="primary" text="post"/>
@@ -60,11 +56,6 @@ export default {
           title: '路由',
           type: 'template',
           template: 'path'
-        },
-        {
-          title: '状态',
-          type: 'template',
-          template: 'status'
         }
       ],
       data: []
