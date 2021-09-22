@@ -7,6 +7,7 @@ import {
   getNotices,
   getNotice,
   removeRead,
+  hasRead,
   restTrash,
   getUnreadCount
 } from '@/api/user'
@@ -179,7 +180,26 @@ export default {
     getMessageList ({ state, commit }) {
       return new Promise((resolve, reject) => {
         getNotices().then(res => {
-          const { unread, readed, trash } = res.data
+          let unread = []
+          let readed = []
+          let trash = []
+          // console.log(res.data)
+          res.data.map((row) => {
+            console.log(row)
+            if (row.is_read === 0 && !row.deleted_at) {
+              unread.push(row)
+            }
+            if (row.is_read === 1 && !row.deleted_at) {
+              readed.push(row)
+            }
+            if (row.deleted_at) {
+              trash.push(row)
+            }
+          })
+          // console.log(unread)
+          // console.log(readed)
+          // console.log(trash)
+          // const { unread, readed, trash } = res.data
           commit('setMessageUnreadList', unread.sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
           commit('setMessageReadedList', readed.map(_ => {
             _.loading = false
@@ -205,7 +225,6 @@ export default {
           getNotice(msg_id).then(res => {
             const content = res.data
             // if (res.data.is_read===1) {
-            console.log(msg_id)
             commit('moveMsg', {
               from: 'messageUnreadList',
               to: 'messageReadedList',
@@ -217,6 +236,21 @@ export default {
             resolve(content)
           })
         }
+      })
+    },
+    // 删除一个已读消息到回收站
+    hasRead ({ commit }, { id }) {
+      return new Promise((resolve, reject) => {
+        hasRead(id).then(() => {
+          commit('moveMsg', {
+            from: 'messageUnreadList',
+            to: 'messageReadedList',
+            id
+          })
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
       })
     },
     // 删除一个已读消息到回收站

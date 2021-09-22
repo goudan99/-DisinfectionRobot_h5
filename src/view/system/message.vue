@@ -48,7 +48,7 @@
         <Spin fix v-if="contentLoading" size="large"></Spin>
         <div class="message-view-header">
           <h2 class="message-view-title">{{ showingMsgItem.title }}</h2>
-          <time class="message-view-time">{{ showingMsgItem.create_time }}</time>
+          <time class="message-view-time">{{ showingMsgItem.create_at }}</time>
         </div>
         <div v-html="messageContent"></div>
       </div>
@@ -117,7 +117,7 @@ export default {
         this.messageContent = content
         const item = this.messageList.find(item => item.msg_id === msg_id)
         if (item) this.showingMsgItem = item
-        // if (this.currentMessageType === 'unread') this.hasRead({ msg_id })
+        if (this.currentMessageType === 'unread') this.hasRead({ id: msg_id })
         this.stopLoading('contentLoading')
       }).catch(() => {
         this.stopLoading('contentLoading')
