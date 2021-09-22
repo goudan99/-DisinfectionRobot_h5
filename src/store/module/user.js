@@ -72,6 +72,7 @@ export default {
     },
     moveMsg (state, { from, to, msg_id }) {
       const index = state[from].findIndex(_ => _.id === msg_id)
+      console.log(msg_id)
       const msgItem = state[from].splice(index, 1)[0]
       msgItem.loading = false
       state[to].unshift(msgItem)
@@ -200,15 +201,15 @@ export default {
           // console.log(readed)
           // console.log(trash)
           // const { unread, readed, trash } = res.data
-          commit('setMessageUnreadList', unread.sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
+          commit('setMessageUnreadList', unread.sort((a, b) => new Date(b.create_at) - new Date(a.create_at)))
           commit('setMessageReadedList', readed.map(_ => {
             _.loading = false
             return _
-          }).sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
+          }).sort((a, b) => new Date(b.create_at) - new Date(a.create_at)))
           commit('setMessageTrashList', trash.map(_ => {
             _.loading = false
             return _
-          }).sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
+          }).sort((a, b) => new Date(b.create_at) - new Date(a.create_at)))
           resolve()
         }).catch(error => {
           reject(error)
@@ -225,11 +226,11 @@ export default {
           getNotice(msg_id).then(res => {
             const content = res.data
             // if (res.data.is_read===1) {
-            commit('moveMsg', {
-              from: 'messageUnreadList',
-              to: 'messageReadedList',
-              msg_id
-            })
+            // commit('moveMsg', {
+            //  from: 'messageUnreadList',
+            //  to: 'messageReadedList',
+            //  msg_id
+            // })
             // }
             commit('setMessageCount', state.unreadCount - 1)
             commit('updateMessageContentStore', { msg_id, content })
@@ -245,7 +246,7 @@ export default {
           commit('moveMsg', {
             from: 'messageUnreadList',
             to: 'messageReadedList',
-            id
+            msg_id: id
           })
           resolve()
         }).catch(error => {
@@ -260,7 +261,7 @@ export default {
           commit('moveMsg', {
             from: 'messageReadedList',
             to: 'messageTrashList',
-            id
+            msg_id: id
           })
           resolve()
         }).catch(error => {

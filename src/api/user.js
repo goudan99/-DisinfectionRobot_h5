@@ -110,6 +110,13 @@ export const getNotice = id => {
     method: 'get'
   })
 }
+/* 删除 */
+export const hasRead = id => {
+  return request({
+    url: 'profile/notice/' + id,
+    method: 'put'
+  })
+}
 
 /* 删除 */
 export const removeRead = id => {
