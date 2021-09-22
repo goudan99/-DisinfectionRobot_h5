@@ -62,6 +62,28 @@ export const getAccess = () => {
   })
 }
 
+export const storeAccess = (data) => {
+  return request({
+    url: 'system/access',
+    data,
+    method: 'post'
+  })
+}
+
+export const removeAccess = (id) => {
+  return request({
+    url: 'system/access/' + id,
+    method: 'delete'
+  })
+}
+
+export const getUris = () => {
+  return request({
+    url: 'system/uris',
+    method: 'get'
+  })
+}
+
 export const getConfig = () => {
   return request({
     url: 'setting/config',
