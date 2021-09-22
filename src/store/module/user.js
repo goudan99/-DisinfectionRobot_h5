@@ -184,9 +184,7 @@ export default {
           let unread = []
           let readed = []
           let trash = []
-          // console.log(res.data)
           res.data.map((row) => {
-            console.log(row)
             if (row.is_read === 0 && !row.deleted_at) {
               unread.push(row)
             }
@@ -197,9 +195,6 @@ export default {
               trash.push(row)
             }
           })
-          // console.log(unread)
-          // console.log(readed)
-          // console.log(trash)
           // const { unread, readed, trash } = res.data
           commit('setMessageUnreadList', unread.sort((a, b) => new Date(b.create_at) - new Date(a.create_at)))
           commit('setMessageReadedList', readed.map(_ => {
@@ -225,13 +220,6 @@ export default {
         } else {
           getNotice(msg_id).then(res => {
             const content = res.data
-            // if (res.data.is_read===1) {
-            // commit('moveMsg', {
-            //  from: 'messageUnreadList',
-            //  to: 'messageReadedList',
-            //  msg_id
-            // })
-            // }
             commit('setMessageCount', state.unreadCount - 1)
             commit('updateMessageContentStore', { msg_id, content })
             resolve(content)
