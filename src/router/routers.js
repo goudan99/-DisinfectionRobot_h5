@@ -96,6 +96,22 @@ export default [
           title: '错误收集'
         },
         component: () => import('@/view/system/logger/api.vue')
+      }, {
+        path: 'api',
+        name: 'log1',
+        meta: {
+          icon: 'ios-bug',
+          title: '日志列表'
+        },
+        component: () => import('@/view/system/logger/code.vue')
+      }, {
+        path: 'api',
+        name: 'logger_api',
+        meta: {
+          icon: 'ios-bug',
+          title: '日志详情'
+        },
+        component: () => import('@/view/system/logger/logger.vue')
       }
     ]
   }

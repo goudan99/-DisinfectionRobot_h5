@@ -111,13 +111,13 @@ export default {
       ],
       formItemRules: {
         name: [
-          { required: true, message: '功能名不能空', trigger: 'blur' }
+          { required: true, message: '权限名不能空', trigger: 'blur' }
         ],
         path: [
           { required: true, message: '路由不能空', trigger: 'blur' }
         ],
         code: [
-          { required: true, message: '功能编号不能空', trigger: 'blur' }
+          { required: true, message: '权限编号不能空', trigger: 'blur' }
         ],
         method: [
           { required: true, message: '路由方法不能为空', trigger: 'blur' }
