@@ -11,7 +11,7 @@
         <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
       </header-bar>
     </Header>
-    <Layout>
+    <Layout style="height:100%">
       <Sider hide-trigger collapsible :width="200" :collapsed-width="64" v-model="collapsed" class="left-sider" :style="{overflow: 'hidden'}">
         <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="menuList" />
       </Sider>
