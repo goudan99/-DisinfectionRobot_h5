@@ -42,8 +42,8 @@
         <FormItem label="昵称" prop="nickname">
           <Input v-model="formItem.nickname" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="登录名" prop="name">
-          <Input :disabled="formItem.id?true:false" v-model="formItem.name" placeholder="请输入内容"></Input>
+        <FormItem label="手机号" prop="phone">
+          <Input v-model="formItem.phone" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="登录密码" prop="password">
           <Input type="password" v-model="formItem.password"  placeholder="请输入内容"></Input>
@@ -61,9 +61,6 @@
             </Checkbox>
           </CheckboxGroup>
           <span v-else>内置管理员</span>
-        </FormItem>
-        <FormItem label="手机号" prop="phone">
-          <Input v-model="formItem.phone" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
           <RadioGroup v-model="formItem.passed">
@@ -85,8 +82,8 @@
         <FormItem label="昵称" prop="nickname">
           <Input v-model="formItem.nickname" placeholder="登录昵称"></Input>
         </FormItem>
-        <FormItem label="登录名" prop="name">
-          <Input :disabled="formItem.id?true:false" v-model="formItem.name" placeholder="登录帐号"></Input>
+        <FormItem label="手机号" prop="phone">
+          <Input v-model="formItem.phone" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="登录密码" prop="password">
           <Input type="password" v-model="formItem.password"  placeholder="如果不修改，保持为空"></Input>
@@ -104,9 +101,6 @@
             </Checkbox>
           </CheckboxGroup>
           <span v-else>内置管理员</span>
-        </FormItem>
-        <FormItem label="手机号" prop="phone">
-          <Input v-model="formItem.phone" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
           <RadioGroup v-model="formItem.passed">
@@ -165,9 +159,6 @@ export default {
         limit: 10
       },
       formItemRules: {
-        name: [
-          { required: true, message: '登录名不能为空', trigger: 'blur' }
-        ],
         password: [
           { required: true, message: '登录密码不能为空', trigger: 'blur' }
         ],
@@ -197,7 +188,6 @@ export default {
       },
       formItem: {
         id: '',
-        name: '',
         roles: [],
         nickname: '',
         password: '',
@@ -213,10 +203,6 @@ export default {
           type: 'selection',
           width: 60,
           align: 'center'
-        },
-        {
-          title: '登录名称',
-          key: 'name'
         },
         {
           title: '手机号',
@@ -268,7 +254,6 @@ export default {
     handleReset () {
       const newData = {
         id: '',
-        name: '',
         roles: [],
         nickname: '',
         passed: 1,
