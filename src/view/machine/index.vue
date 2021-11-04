@@ -11,7 +11,7 @@
       </div>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button  class="search-btn" type="primary" @click="handleModal()">
+          <Button  class="search-btn" type="primary" @click="handleStore()">
             <Icon type="search"/>&nbsp;&nbsp;新建设备
           </Button>
           <Button class="search-btn" type="error" @click="handleRemove(select)" :disabled="disabled">
@@ -25,7 +25,8 @@
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)"> 编辑</a>&nbsp;
+          <a @click="handleShow(row.id)"> 操作用户</a>&nbsp;
+          <a @click="handleStore(row)"> 编辑</a>&nbsp;
           <a @click="handleRemove([row.id])">删除</a>&nbsp;
         </template>
       </Table>
@@ -36,17 +37,24 @@
         <FormItem label="序列号" prop="sn">
           <Input v-model="formItem.sn" placeholder="请输入内容"></Input>
         </FormItem>
+        <FormItem label="机器名称" prop="name">
+          <Input v-model="formItem.name" placeholder="机器名称"></Input>
+        </FormItem>
       </Form>
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
         <Button type="primary" @click="handleSubmit">提交</Button>
       </div>
     </Modal>
+    <Modal v-model="modalVisible1" :title="modalTitle1" width="680">
+      <Table :columns="columns1" :data="data1">
+      </Table>
+    </Modal>
   </div>
 </template>
 
 <script>
-import { getMachines, storeMachine, removeMachine } from '@/api/machine'
+import { getMachines, getMachine, storeMachine, removeMachine } from '@/api/machine'
 import dayjs from 'dayjs'
 export default {
   name: 'machineMoudle',
@@ -67,10 +75,14 @@ export default {
       formItemRules: {
         sn: [
           { required: true, message: '设备序列号不能为空', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '机器名称', trigger: 'blur' }
         ]
       },
       formItem: {
         id: '',
+        name: '',
         sn: ''
       },
       columns: [
@@ -88,6 +100,10 @@ export default {
           key: 'sn'
         },
         {
+          title: '机器名称',
+          key: 'name'
+        },
+        {
           title: '创建时间',
           key: 'created_at',
           render: (h, { row }) => {
@@ -99,11 +115,28 @@ export default {
         {
           title: '操作',
           slot: 'action',
-          width: 125,
+          width: 200,
           fixed: 'right'
         }
       ],
-      data: []
+      data: [],
+      modalVisible1: false,
+      modalTitle1: '绑定的用户',
+      columns1: [
+        {
+          title: 'id',
+          key: 'id'
+        },
+        {
+          title: '手机',
+          key: 'phone'
+        },
+        {
+          title: '昵称',
+          key: 'nickname'
+        }
+      ],
+      data1: []
     }
   },
   methods: {
@@ -113,7 +146,13 @@ export default {
         this.formItem.grantActions = []
       }
     },
-    handleModal (data) {
+    handleShow (id) {
+      this.modalVisible1 = true
+      getMachine(id).then(res => {
+        this.data1 = res.data.users
+      })
+    },
+    handleStore (data) {
       if (data) {
         this.modalTitle = '编辑设备'
         this.formItem = Object.assign({}, this.formItem, data)
@@ -123,7 +162,7 @@ export default {
       this.modalVisible = true
     },
     handleReset () {
-      const newData = { id: '', sn: '' }
+      const newData = { id: '', sn: '', name: '' }
       this.formItem = newData
       // 重置验证
       this.$refs['form1'].resetFields()
