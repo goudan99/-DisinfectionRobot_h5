@@ -25,7 +25,7 @@
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleShow(row.id)"> 操作用户</a>&nbsp;
+          <a @click="handleShow(row.id)"> 操作用户11</a>&nbsp;
           <a @click="handleStore(row)"> 编辑</a>&nbsp;
           <a @click="handleRemove([row.id])">删除</a>&nbsp;
         </template>
