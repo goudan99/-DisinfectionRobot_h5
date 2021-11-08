@@ -1,9 +1,10 @@
 import request from '@/libs/request'
 
 /* 获取所有机器 */
-export const getMachines = () => {
+export const getMachines = (data) => {
   return request({
     url: 'robot/machine',
+    params: data,
     method: 'get'
   })
 }
