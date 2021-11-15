@@ -55,11 +55,11 @@
           <Input v-model="formItem.code" :disabled="formItem.id?true:false" placeholder="激活码,不能修改"></Input>
         </FormItem>
         <FormItem label="角色：" prop="role">
-          <CheckboxGroup v-model="formItem.roles" v-if="formItem.is_system !== 1">
-            <Checkbox v-for="(item,index) in roleList" :key="index" :label="item.id">
+          <RadioGroup v-if="formItem.is_system !== 1">
+            <Radio v-for="(item,index) in roleList" :key="index" :label="item.id">
              <span>{{item.name}}</span>
-            </Checkbox>
-          </CheckboxGroup>
+            </Radio>
+          </RadioGroup>
           <span v-else>内置管理员</span>
         </FormItem>
         <FormItem label="状态">
@@ -95,11 +95,11 @@
           <Input v-model="formItem.code" :disabled="formItem.id?true:false" placeholder="请输入激活码"></Input>
         </FormItem>
         <FormItem label="角色：" prop="role">
-          <CheckboxGroup v-model="formItem.roles" v-if="formItem.is_system !== 1">
-            <Checkbox v-for="(item,index) in roleList" :key="index" :label="item.id">
+          <RadioGroup v-model="formItem.roles[0]" v-if="formItem.is_system !== 1">
+            <Radio v-for="(item,index) in roleList" :key="index" :label="item.id">
              <span>{{item.name}}</span>
-            </Checkbox>
-          </CheckboxGroup>
+            </Radio>
+          </RadioGroup>
           <span v-else>内置管理员</span>
         </FormItem>
         <FormItem label="状态">

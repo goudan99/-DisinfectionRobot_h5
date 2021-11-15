@@ -140,3 +140,10 @@ export const getUnreadCount = () => {
     method: 'get'
   })
 }
+
+export const getFreedbackes = () => {
+  return request({
+    url: 'me/feedback',
+    method: 'get'
+  })
+}

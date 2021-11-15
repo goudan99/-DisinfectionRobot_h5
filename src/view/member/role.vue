@@ -44,6 +44,12 @@
         <FormItem label="描述">
           <Input v-model="formItem.desc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
+        <FormItem label="等级">
+          <RadioGroup v-model="formItem.level">
+            <Radio label="0">普通角色</Radio>
+            <Radio label="1">管理员</Radio>
+          </RadioGroup>
+        </FormItem>
         <FormItem label="权限" prop="grantMenus">
           <Table :columns="columns2" :data="selectAccess">
             <template slot="status" slot-scope="{ row }">
@@ -99,6 +105,7 @@ export default {
       formItem: {
         roleId: '',
         roleCode: '',
+        level: '0',
         name: '',
         path: '',
         status: 1,
@@ -169,6 +176,7 @@ export default {
         this.modalTitle = '编辑角色'
         this.formItem = Object.assign({}, this.formItem, data)
         this.formItem.statusSwatch = this.formItem.status === 1 ? '1' : '0'
+        this.formItem.level = this.formItem.level + ''
         this.handleLoadRoleGranted(this.formItem.id)
       } else {
         this.modalTitle = '添加角色'
@@ -178,6 +186,7 @@ export default {
     handleReset () {
       const newData = {
         roleId: '',
+        level: 0,
         roleCode: '',
         name: '',
         path: '',
