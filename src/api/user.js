@@ -141,9 +141,18 @@ export const getUnreadCount = () => {
   })
 }
 
-export const getFreedbackes = () => {
+export const getFreedbackes = (data) => {
   return request({
     url: 'me/feedback',
+    params: data,
     method: 'get'
+  })
+}
+
+export const removeFreedbackes = (data) => {
+  return request({
+    url: 'me/feedback',
+    data,
+    method: 'delete'
   })
 }
